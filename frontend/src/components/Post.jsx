@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import axios from 'axios'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
+import { Badge } from './ui/badge'
 
 const Post = ({ post }) => {
     const [text, setText] = useState("");
@@ -95,6 +96,17 @@ const Post = ({ post }) => {
         }
     }
 
+    const BookmarkHannder = async () => {
+        try {
+            const res = await axios.get(`http://localhost:8000/api/v1/post/${post._id}/bookmark`, { withCredentials: true });
+            if (res.data.success) {
+                toast.success(res.data.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     const deletePostHandler = async () => {
         try {
@@ -119,14 +131,20 @@ const Post = ({ post }) => {
                         <AvatarImage src={post.author?.profilePicture} alt="@shadcn" />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
+                    <div className='flex items-center gap-2'>
                     <h1>{post.author?.username}</h1>
+                    {user._id === post.author._id && <Badge className="text-xs px-2 py-0.5"  variant="secondary">You</Badge>}
+                    </div>
                 </div>
                 <Dialog >
                     <DialogTrigger asChild>
                         <MoreHorizontal className='cursor-pointer' />
                     </DialogTrigger>
                     <DialogContent className="flex flex-col items-center text-sm text-center">
-                        <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+                        {
+                            post.author._id !== user._id && <Button variant="ghost" className="cursor-pointer w-fit  font-bold">Follow</Button>
+                        }
+                       
                         <Button variant="ghost" className="cursor-pointer w-fit  font-bold">Add to favorites</Button>
                         {
                             user._id === post.author._id && <Button onClick={deletePostHandler} variant="ghost" className="cursor-pointer w-fit  font-bold">Delete Post</Button>
@@ -150,7 +168,7 @@ const Post = ({ post }) => {
                     }} className='cursor-pointer hover:text-gray-600' />
                     <Send className='cursor-pointer hover:text-gray-600' />
                 </div>
-                <Bookmark className='cursor-pointer hover:text-gray-600' />
+                <Bookmark onClick={BookmarkHannder} className='cursor-pointer hover:text-gray-600' />
             </div>
             <span className='font-medium block mb-2'>{postLike} likes</span>
             <p>

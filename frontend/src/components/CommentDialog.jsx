@@ -107,7 +107,7 @@ const CommentDialog = ({ open, setOpen }) => {
             <hr />
             <div  className='flex-1 overflow-y-auto max-h-96 p-4'>
               {
-                selectedPost?.comments.map((comment) => <Comment key={comment._id} comment={comment} />)
+                comment?.map((comment) => <Comment key={comment._id} comment={comment} />)
               }
             </div>
             <div className='p-4'>
